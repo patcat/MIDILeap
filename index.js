@@ -12,11 +12,11 @@ app.get('/', function(request, response) {
 	response.sendfile('public/index.html');
 });
 
-app.get('/shouldibesilent', function(request, response) {
+app.post('/shouldibesilent', function(request, response) {
 	console.log('That phone wants to know if it should be silent...', request);
 	response.json({callSound: call.sound});
 });
- 
+
 app.post('/call', function(request, response) {
 	io.sockets.emit('call'+ request.body.action);
 	response.json({success: true});
