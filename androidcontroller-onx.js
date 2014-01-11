@@ -37,7 +37,7 @@ function checkIfPhoneShouldBeSilent() {
 		console.info('successfully received http response!');
 		console.info(response);
 
-		if (response.callSound == false) {
+		if (response.callSound === false) {
 			device.audio.ringerVolume = 0;
 		}
 

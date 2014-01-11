@@ -18,6 +18,7 @@ app.post('/shouldibesilent', function(request, response) {
 });
 
 app.post('/call', function(request, response) {
+	console.log('Something is setting the call to ' + request.body.action);
 	io.sockets.emit('call'+ request.body.action);
 	response.json({success: true});
 });
