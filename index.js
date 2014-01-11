@@ -13,6 +13,7 @@ app.get('/', function(request, response) {
 });
 
 app.get('/shouldibesilent', function(request, response) {
+	console.log('That phone wants to know if it should be silent...', request);
 	response.json({callSound: call.sound});
 });
  
