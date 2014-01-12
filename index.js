@@ -5,6 +5,7 @@ var http = require('http'),
 	io = require('socket.io').listen(server),
 	port = process.env.PORT || 5000,
 	call = {};
+	call.sound = true;
  
 app.use(express.bodyParser());
 
