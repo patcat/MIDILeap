@@ -29,6 +29,9 @@ app.post('/call', function(request, response) {
 		case 'sound':
 			call.sound = true;
 		break;
+		case 'reset':
+			call.sound = true;
+		break;
 	}
 	response.json({success: true, actionReceived: request.body.action});
 });

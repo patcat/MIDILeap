@@ -42,7 +42,6 @@ function checkIfPhoneShouldBeSilent() {
 		if (response.callSound === false) {
 			device.audio.ringerVolume = 0;
 		}
-
 	}, function onError(textStatus, response) {
 		var error = {};
 		error.message = textStatus;
@@ -53,4 +52,21 @@ function checkIfPhoneShouldBeSilent() {
 
 function returnToPhoneDefaults() {
 	device.audio.ringerVolume = 80;
+
+	device.ajax({
+		url: 'http://androidcontroller.herokuapp.com/call',
+		type: 'POST',
+		dataType: 'json',
+		data: '{"action":"reset"}',
+		headers: {'Content-Type':'application/json'}
+	}, function onSuccess(body, textStatus, response) {
+		console.info('Successfully got a response after asking to reset the call state');
+		device.notifications.createNotification('Successfully got a response after asking to reset the call state').show();
+		console.info(response);
+	}, function onError(textStatus, response) {
+		var error = {};
+		error.message = textStatus;
+		error.statusCode = response.status;
+		console.error('error: ',error);
+	});
 }
