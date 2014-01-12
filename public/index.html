@@ -34,6 +34,17 @@
 
 							//io.sockets.emit('musicplay');
 						break;
+						case "swipe":
+							$.ajax({
+								url: '/shouldibesilent',
+								type: 'POST',
+								data: {
+									call: 'incoming'
+								}
+							}).done(function() {
+								
+							});
+						break;
 					}
 				}
 			});

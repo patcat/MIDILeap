@@ -35,7 +35,9 @@ function checkIfPhoneShouldBeSilent() {
 		headers: {'Content-Type':'application/json'}
 	}, function onSuccess(body, textStatus, response) {
 		console.info('successfully received http response!');
+		device.notifications.createNotification('Got a response from server').show();
 		console.info(response);
+		device.notifications.createNotification('It said ' + response.callSound).show();
 
 		if (response.callSound === false) {
 			device.audio.ringerVolume = 0;
