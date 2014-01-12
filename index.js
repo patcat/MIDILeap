@@ -20,7 +20,16 @@ app.post('/shouldibesilent', function(request, response) {
 
 app.post('/call', function(request, response) {
 	console.log('Something is setting the call to ' + request.body.action);
-	io.sockets.emit('call'+ request.body.action);
+	//io.sockets.emit('call'+ request.body.action);
+
+	switch (request.body.action) {
+		case 'mute':
+			call.sound = false;
+		break;
+		case 'sound':
+			call.sound = true;
+		break;
+	}
 	response.json({success: true, actionReceived: request.body.action});
 });
  
@@ -37,13 +46,13 @@ io.configure(function() {
 	io.set('polling duration', 10);
 });
 
-io.sockets.on('connection', function(socket) {
+/*io.sockets.on('connection', function(socket) {
 	socket.on('callmute', function(data) {
 		console.log(data);
-		call.sound = false;
+		
 	});
 	socket.on('callsound', function(data) {
 		console.log(data);
 		call.sound = true;
 	});
-});
+});*/
