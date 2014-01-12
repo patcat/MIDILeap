@@ -3,13 +3,9 @@
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	<script src="//js.leapmotion.com/0.3.0-beta3/leap.min.js"></script>
-	<!--<script src="/socket.io/socket.io.js"></script>-->
 	<script>
-		(function() {
-			//var socket = io.connect(window.location.hostname);
-		}());
-
-		var controller = new Leap.Controller({enableGestures: true});
+		var controller = new Leap.Controller({enableGestures: true}),
+			callMuteRequestMade = false;
 			controller.loop(function(frame) {
 				latestFrame = frame;
 				document.getElementById('responses').innerHTML = (latestFrame).dump()+"</div>";
@@ -22,17 +18,21 @@
 						case "circle":
 							console.log('Circle');
 
-							$.ajax({
-								url: '/call',
-								type: 'POST',
-								data: {
-									action: 'mute'
-								}
-							}).done(function() {
+							if (!callMuteRequestMade) {
+								callMuteRequestMade = true; // Only ask it to mute once!
 								
-							});
+								$.ajax({
+									url: '/call',
+									type: 'POST',
+									data: {
+										action: 'mute'
+									}
+								}).done(function() {
+									callMuted = true;
+								});
+							}
 
-							//io.sockets.emit('musicplay');
+							
 						break;
 						case "swipe":
 							$.ajax({
@@ -41,8 +41,6 @@
 								data: {
 									call: 'incoming'
 								}
-							}).done(function() {
-								
 							});
 						break;
 					}
