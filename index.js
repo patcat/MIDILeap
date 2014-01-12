@@ -2,7 +2,7 @@ var http = require('http'),
 	express = require('express'),
 	app = express(),
 	server = require('http').createServer(app),
-	io = require('socket.io').listen(server),
+	//io = require('socket.io').listen(server),
 	port = process.env.PORT || 5000,
 	call = {};
 	call.sound = true;
@@ -44,10 +44,10 @@ server.listen(port, function() {
 	console.log('Listening on ' + port);
 });
 
-io.configure(function() {
+/*io.configure(function() {
 	io.set('transports', ['xhr-polling']);
 	io.set('polling duration', 10);
-});
+});*/
 
 /*io.sockets.on('connection', function(socket) {
 	socket.on('callmute', function(data) {
