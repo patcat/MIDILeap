@@ -1,61 +1,17 @@
-var http = require('http'),
-	express = require('express'),
-	app = express(),
-	server = require('http').createServer(app),
-	//io = require('socket.io').listen(server),
-	port = process.env.PORT || 5000,
-	call = {};
-	call.sound = true;
- 
-app.use(express.bodyParser());
+var five = require('johnny-five'),
+	leapjs = require('leapjs'),
+	board = new five.Board(),
+	led, frame;
 
-app.get('/', function(request, response) {
-	response.sendfile('public/index.html');
-});
+var controller = new Leap.Controller({enableGestures: true});
 
-app.post('/shouldibesilent', function(request, response) {
-	console.log('That phone wants to know if it should be silent...', request);
-	response.json({callSound: call.sound});
-});
+controller.on("frame", function(frame) {
+	//console.log("Frame: " + frame.id + " @ " + frame.timestamp);
 
-app.post('/call', function(request, response) {
-	console.log('Something is setting the call to ' + request.body.action);
-	//io.sockets.emit('call'+ request.body.action);
+	for (var i = 0; i < frame.hands.length; i++) {
+		var hand = frame.hands[i],
+			direction = hand.direction;
 
-	switch (request.body.action) {
-		case 'mute':
-			call.sound = false;
-		break;
-		case 'sound':
-			call.sound = true;
-		break;
-		case 'reset':
-			call.sound = true;
-		break;
+		console.log(direction);
 	}
-	response.json({success: true, actionReceived: request.body.action});
 });
- 
-app.get(/^(.+)$/, function(req, res) {
-	res.sendfile('public/' + req.params[0]);
-});
- 
-server.listen(port, function() {
-	console.log('Listening on ' + port);
-});
-
-/*io.configure(function() {
-	io.set('transports', ['xhr-polling']);
-	io.set('polling duration', 10);
-});*/
-
-/*io.sockets.on('connection', function(socket) {
-	socket.on('callmute', function(data) {
-		console.log(data);
-		
-	});
-	socket.on('callsound', function(data) {
-		console.log(data);
-		call.sound = true;
-	});
-});*/
