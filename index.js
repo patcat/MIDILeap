@@ -1,40 +1,107 @@
 var five = require('johnny-five'),
 	Leap = require('leapjs'),
-	//board = new five.Board(),
-	led, frame;
+	board = new five.Board(),
+	shiftRegister,
+	led, frame,
+	allowLEDchange = true,
+
+	// Pin definitions
+	datapin = 2,
+	clockpin = 3,
+	latchpin = 4,
+
+	// Global variable for data sending to shift register
+	data = 0;
 
 var controller = new Leap.Controller({enableGestures: true});
 
-controller.on("frame", function(frame) {
-	for (var i = 0; i < frame.hands.length; i++) {
-		var hand = frame.hands[i],
-			direction = hand.direction,
-			sphereCenter = hand.sphereCenter;
-
-		//console.log(sphereCenter);
-
-		// Create grid of LEDs, set up if statements or something to decide which are switched on
-		if (sphereCenter[0] < -50) {
-			console.log('Hand is on the left');
-		} else if (sphereCenter[0] > 50) {
-			console.log('Hand is on the right');
-		} else if (sphereCenter[0] >= -50 && sphereCenter[0] <= 50) {
-			console.log('Hand is about center');
+board.on("ready", function() {
+	console.log('Board ready');
+	shiftRegister = new five.ShiftRegister({
+		pins: {
+			data: datapin,
+			clock: clockpin,
+			latch: latchpin
 		}
+	});
 
-		if (sphereCenter[2] < -50) {
-			console.log('Hand is on the top');
-		} else if (sphereCenter[2] > 50) {
-			console.log('Hand is on the bottom');
-		} else if (sphereCenter[2] >= -50 && sphereCenter[2] <= 50) {
-			console.log('Hand is about middle');
-		}
+	var value = 0;
+	/*function next() {
+		value = value > 0x11 ? value >> 1 : 0x88;
+		shiftRegister.send( value );
+		setTimeout(next, 300);
+	}*/
+
+	shiftRegister.send(0);
+	//shiftRegister.send(0x10);
+
+	// 5 6 7 8
+	// 1 2 3 4
+
+	this.repl.inject({
+		sr: shiftRegister
+	});
+
+	//next();
+
+	limitCalls();
+
+	function limitCalls() {
+		allowLEDchange = true;
+		setTimeout(limitCalls, 300);
 	}
-});
 
-var frameCount = 0;
-controller.on("frame", function(frame) {
-  frameCount++;
+	controller.on("frame", function(frame) {
+		//console.log("Frame: " + frame.id + " @ " + frame.timestamp);
+
+		if (allowLEDchange) {
+			for (var i = 0; i < frame.hands.length; i++) {
+				var hand = frame.hands[0],
+					direction = hand.direction,
+					sphereCenter = hand.sphereCenter;
+
+				console.log(sphereCenter);
+
+				allowLEDchange = false;
+				shiftRegister.send(0);
+
+				// Create grid of LEDs, set up if statements or something to decide which are switched on
+				if (sphereCenter[0] < -50) {
+					if (sphereCenter[2] < 0) {
+						console.log('A1');
+						shiftRegister.send(0x08);
+					} else if (sphereCenter[2] >= 0) {
+						console.log('B1');
+						shiftRegister.send(0x80);
+					}
+				} else if (sphereCenter[0] > 50) {
+					if (sphereCenter[2] < 0) {
+						console.log('A4');
+						shiftRegister.send(0x01);
+					} else if (sphereCenter[2] >= 0) {
+						console.log('B4');
+						shiftRegister.send(0x10);
+					}
+				} else if (sphereCenter[0] >= -50 && sphereCenter[0] <= 0) {
+					if (sphereCenter[2] < 0) {
+						console.log('A2');
+						shiftRegister.send(0x04);
+					} else if (sphereCenter[2] >= 0) {
+						console.log('B2');
+						shiftRegister.send(0x40);
+					}
+				} else if (sphereCenter[0] > 0 && sphereCenter[0] <= 50) {
+					if (sphereCenter[2] < 0) {
+						console.log('A3');
+						shiftRegister.send(0x02);
+					} else if (sphereCenter[2] >= 0) {
+						console.log('B3');
+						shiftRegister.send(0x20);
+					}
+				}
+			}
+		}
+	});
 });
 
 controller.on('ready', function() {
