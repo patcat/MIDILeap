@@ -1,11 +1,15 @@
 {
-  "name": "turniton",
+  "name": "basicserial",
   "version": "0.0.1",
   "dependencies": {
     "express": "3.1.x",
     "socket.io": "latest",
     "leapjs": "0.3.0-beta3",
-    "johnny-five": "~0.7.11"
+    "serialport": "latest",
+    "firmata": "latest",
+    "repl": "latest",
+    "johnny-five": "~0.7.11",
+    "midi": "latest"
   },
   "engines": {
     "node": "0.10.x",
