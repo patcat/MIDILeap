@@ -23,7 +23,6 @@ serialPort.on("open", function() {
 
 	setInterval(function() {
 		var frame = controller.frame();
-		//console.log(controller.frame().hands);
 		if (frame.hands.length > 0) {
 			var hand = frame.hands[0],
 				direction = hand.direction,
@@ -39,21 +38,16 @@ serialPort.on("open", function() {
 			proposedNote = Math.floor(minimumNote + (frame.hands[0].sphereCenter[1] * eachNote));
 			currentNote = proposedNote > minimumNote && proposedNote < maximumNote ? proposedNote : currentNote;
 
-			//console.log(frame.hands[0].sphereCenter[0] + 200);
-
 			proposedInstrument = Math.floor(minimumInstrument + ((frame.hands[0].sphereCenter[0] + 200) * eachInstrument));
 			proposedInstrument = proposedInstrument > minimumInstrument && proposedInstrument < maximumInstrument ? proposedInstrument : currentInstrument;
 			console.log(proposedInstrument);
 
 			if (currentInstrument != proposedInstrument && fingerCount > 2) {
 				currentInstrument = proposedInstrument;
-				//console.log(currentInstrument);
 				serialPort.write('{i:'+currentInstrument+'}');
 			} else {
 				serialPort.write('{o:2,c:0,n:'+currentNote+',v:60,d:20}');
 			}
-		} else {
-			//serialPort.write('{o:2,c:0,n:30,v:60,d:50}');
 		}
 	}, 100);
 });
